@@ -1,4 +1,4 @@
-FROM maven:3.9.6-eclipse-temurin-17
+FROM public.ecr.aws/docker/library/maven:3.9.6-eclipse-temurin-17
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
