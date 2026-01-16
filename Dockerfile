@@ -1,6 +1,6 @@
 FROM public.ecr.aws/docker/library/maven:3.9.6-eclipse-temurin-17
 
-# Install system dependencies
+# Install required tools
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
@@ -9,28 +9,30 @@ RUN apt-get update && apt-get install -y \
     unzip \
     --no-install-recommends
 
-# Add Google Chrome repository (modern way)
-RUN mkdir -p /etc/apt/keyrings \
-    && wget -q https://dl.google.com/linux/linux_signing_key.pub \
-       -O /etc/apt/keyrings/google-linux-signing-keyring.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/google-linux-signing-keyring.gpg] \
-       http://dl.google.com/linux/chrome/deb/ stable main" \
-       > /etc/apt/sources.list.d/google.list
+# Add Google Chrome signing key (PROPER way)
+RUN mkdir -p /etc/apt/keyrings && \
+    wget -qO- https://dl.google.com/linux/linux_signing_key.pub | \
+    gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg
 
-# Install Chrome
+# Add Google Chrome repository
+RUN echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] \
+    http://dl.google.com/linux/chrome/deb/ stable main" \
+    > /etc/apt/sources.list.d/google-chrome.list
+
+# Install Google Chrome
 RUN apt-get update && apt-get install -y \
     google-chrome-stable \
-    --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+    --no-install-recommends && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy pom.xml first (Docker layer caching)
+# Copy pom.xml first (cache dependencies)
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
-# Copy project files
+# Copy project
 COPY . .
 
 # Run tests
