@@ -12,9 +12,10 @@ public class MyTest {
     @Test(priority = 1)
     public void launch_google(){
         ChromeOptions option = new ChromeOptions();
-        option.addArguments("--headless");
+        option.addArguments("--headless=new");   // Use ONLY this (remove old --headless)
+        option.addArguments("--no-sandbox");     // 🔥 REQUIRED in Docker
         option.addArguments("--disable-dev-shm-usage");
-        option.addArguments("--headless=new");
+        option.addArguments("--disable-gpu");
         driver = new ChromeDriver(option);
         driver.get("https://www.google.com");
     }
