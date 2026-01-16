@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Docker
+  build:
+    commands:
+      - echo Build Docker image
+      - docker build -t selenium-tests .
+      - echo Run Selenium tests
+      - docker run selenium-tests
+artifacts:
+  files:
+    - target/surefire-reports/**/*
