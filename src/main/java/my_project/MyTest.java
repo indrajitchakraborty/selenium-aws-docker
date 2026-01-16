@@ -13,6 +13,8 @@ public class MyTest {
     public void launch_google(){
         ChromeOptions option = new ChromeOptions();
         option.addArguments("--headless");
+        option.addArguments("--disable-dev-shm-usage");
+        option.addArguments("--headless=new");
         driver = new ChromeDriver(option);
         driver.get("https://www.google.com");
     }
